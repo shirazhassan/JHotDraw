@@ -84,7 +84,6 @@ public class ChopRectangleConnector extends AbstractConnector {
             double grow;
             switch (target.get(STROKE_PLACEMENT)) {
                 case CENTER:
-                default:
                     grow = AttributeKeys.getStrokeTotalWidth(target, 1.0) / 2d;
                     break;
                 case OUTSIDE:
@@ -92,6 +91,9 @@ public class ChopRectangleConnector extends AbstractConnector {
                     break;
                 case INSIDE:
                     grow = 0d;
+                    break;
+                default:
+                    grow = AttributeKeys.getStrokeTotalWidth(target, 1.0) / 2d;
                     break;
             }
             Geom.grow(r, grow, grow);
