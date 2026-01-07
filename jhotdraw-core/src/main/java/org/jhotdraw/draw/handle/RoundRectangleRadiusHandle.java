@@ -29,6 +29,7 @@ public class RoundRectangleRadiusHandle extends AbstractHandle {
 
     private static final int OFFSET = 6;
     private Point originalArc;
+    private String labelBundleName = "org.jhotdraw.draw.Labels";
 
     /**
      * Creates a new instance.
@@ -103,7 +104,7 @@ public class RoundRectangleRadiusHandle extends AbstractHandle {
         Point2D.Double oldArc = view.viewToDrawing(originalArc);
         Point2D.Double newArc = view.viewToDrawing(viewArc);
         ResourceBundleUtil labels
-                = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
+                = ResourceBundleUtil.getBundle(labelBundleName);
         CompositeFigureEdit edit = new CompositeFigureEdit(owner, labels.getString("attribute.roundRectRadius"));
         fireUndoableEditHappened(edit);
         fireUndoableEditHappened(new PropertyChangeEdit(owner, RoundRectangleFigure.ARC_WIDTH_PROPERTY, oldArc.x, newArc.x));
@@ -137,6 +138,8 @@ public class RoundRectangleRadiusHandle extends AbstractHandle {
                 newArc.x += 1;
                 evt.consume();
                 break;
+            default:
+                break;
         }
         if (!newArc.equals(oldArc)) {
             owner.willChange();
@@ -144,7 +147,7 @@ public class RoundRectangleRadiusHandle extends AbstractHandle {
             owner.setArcHeight(newArc.y);
             owner.changed();
             ResourceBundleUtil labels
-                    = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
+                    = ResourceBundleUtil.getBundle(labelBundleName);
             CompositeFigureEdit edit = new CompositeFigureEdit(owner, labels.getString("attribute.roundRectRadius"));
             fireUndoableEditHappened(edit);
             fireUndoableEditHappened(new PropertyChangeEdit(owner, RoundRectangleFigure.ARC_WIDTH_PROPERTY, oldArc.x, newArc.x));
@@ -155,7 +158,7 @@ public class RoundRectangleRadiusHandle extends AbstractHandle {
 
     @Override
     public String getToolTipText(Point p) {
-        return ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels").
+        return ResourceBundleUtil.getBundle(labelBundleName).
                 getString("handle.roundRectangleRadius.toolTipText");
     }
 }
