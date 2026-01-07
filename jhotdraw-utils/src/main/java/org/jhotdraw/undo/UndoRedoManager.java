@@ -50,6 +50,8 @@ public class UndoRedoManager extends UndoManager {
      * Sending this UndoableEdit event to the UndoRedoManager
      * disables the Undo and Redo functions of the manager.
      */
+
+    /*
     public static final UndoableEdit DISCARD_ALL_EDITS = new AbstractUndoableEdit() {
         private static final long serialVersionUID = 1L;
 
@@ -63,58 +65,8 @@ public class UndoRedoManager extends UndoManager {
             return false;
         }
     };
+*/
 
-    /**
-     * Undo Action for use in a menu bar.
-     */
-    private class UndoAction
-            extends AbstractAction {
-
-        private static final long serialVersionUID = 1L;
-
-        public UndoAction() {
-            labels.configureAction(this, "edit.undo");
-            setEnabled(false);
-        }
-
-        /**
-         * Invoked when an action occurs.
-         */
-        @Override
-        public void actionPerformed(ActionEvent evt) {
-            try {
-                undo();
-            } catch (CannotUndoException e) {
-                logger.warning("Can't undo: " + e);
-            }
-        }
-    }
-
-    /**
-     * Redo Action for use in a menu bar.
-     */
-    private class RedoAction
-            extends AbstractAction {
-
-        private static final long serialVersionUID = 1L;
-
-        public RedoAction() {
-            labels.configureAction(this, "edit.redo");
-            setEnabled(false);
-        }
-
-        /**
-         * Invoked when an action occurs.
-         */
-        @Override
-        public void actionPerformed(ActionEvent evt) {
-            try {
-                redo();
-            } catch (CannotRedoException e) {
-                logger.warning("Can't redo: " + e);
-            }
-        }
-    }
     /**
      * The undo action instance.
      */
