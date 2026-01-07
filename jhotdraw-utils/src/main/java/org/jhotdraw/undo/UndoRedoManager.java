@@ -51,7 +51,6 @@ public class UndoRedoManager extends UndoManager {
      * disables the Undo and Redo functions of the manager.
      */
 
-    /*
     public static final UndoableEdit DISCARD_ALL_EDITS = new AbstractUndoableEdit() {
         private static final long serialVersionUID = 1L;
 
@@ -65,7 +64,6 @@ public class UndoRedoManager extends UndoManager {
             return false;
         }
     };
-*/
 
     /**
      * The undo action instance.
@@ -88,8 +86,8 @@ public class UndoRedoManager extends UndoManager {
      */
     public UndoRedoManager() {
         getLabels();
-        undoAction = new UndoAction();
-        redoAction = new RedoAction();
+        undoAction = new UndoAction(this);
+        redoAction = new RedoAction(this);
     }
 
     /**
