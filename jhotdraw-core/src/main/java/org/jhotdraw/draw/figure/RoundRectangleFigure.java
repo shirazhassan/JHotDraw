@@ -55,10 +55,6 @@ public class RoundRectangleFigure extends AbstractAttributedFigure {
 
     public RoundRectangleFigure(double x, double y, double width, double height) {
         roundrect = new RoundRectangle2D.Double(x, y, width, height, DEFAULT_ARC, DEFAULT_ARC);
-        /*
-    FILL_COLOR.set(this, Color.white);
-    STROKE_COLOR.set(this, Color.black);
-         */
     }
 
     // DRAWING
@@ -231,14 +227,14 @@ public class RoundRectangleFigure extends AbstractAttributedFigure {
     @Override
     public void read(DOMInput in) throws IOException {
         super.read(in);
-        roundrect.arcwidth = in.getAttribute("arcWidth", DEFAULT_ARC);
-        roundrect.archeight = in.getAttribute("arcHeight", DEFAULT_ARC);
+        roundrect.arcwidth = in.getAttribute(ARC_WIDTH_PROPERTY, DEFAULT_ARC);
+        roundrect.archeight = in.getAttribute(ARC_HEIGHT_PROPERTY, DEFAULT_ARC);
     }
 
     @Override
     public void write(DOMOutput out) throws IOException {
         super.write(out);
-        out.addAttribute("arcWidth", roundrect.arcwidth);
-        out.addAttribute("arcHeight", roundrect.archeight);
+        out.addAttribute(ARC_WIDTH_PROPERTY, roundrect.arcwidth);
+        out.addAttribute(ARC_HEIGHT_PROPERTY, roundrect.archeight);
     }
 }
