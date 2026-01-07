@@ -8,15 +8,21 @@
 package org.jhotdraw.gui.action;
 
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import javax.swing.*;
 import javax.swing.text.*;
 import static org.jhotdraw.draw.AttributeKeys.CANVAS_FILL_COLOR;
 import static org.jhotdraw.draw.AttributeKeys.CANVAS_FILL_OPACITY;
 import org.jhotdraw.draw.Drawing;
+import org.jhotdraw.draw.DrawingEditor;
 import org.jhotdraw.draw.event.DrawingAttributeEditorHandler;
 import org.jhotdraw.draw.gui.JAttributeSlider;
+import org.jhotdraw.draw.gui.JAttributeTextField;
 import org.jhotdraw.formatter.JavaNumberFormatter;
 import org.jhotdraw.gui.Dialogs;
+import org.jhotdraw.gui.JPopupButton;
 import org.jhotdraw.util.ResourceBundleUtil;
 
 /**
@@ -28,14 +34,23 @@ import org.jhotdraw.util.ResourceBundleUtil;
  * @version $Id$
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class EditCanvasPanel extends javax.swing.JPanel {
+public class EditCanvasPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private ResourceBundleUtil labels;
     private Drawing drawing;
+    private DrawingEditor editor; // FIX: Added Editor field
     private JAttributeSlider opacitySlider;
     private JColorChooser colorChooser;
-    private DrawingAttributeEditorHandler<Double> opacityFieldHandler, opacitySliderHandler;
+    private DrawingAttributeEditorHandler<Double> opacityFieldHandler;
+    private DrawingAttributeEditorHandler<Double> opacitySliderHandler;
+
+    // UI Components
+    private javax.swing.JButton colorButton;
+    private javax.swing.JLabel colorLabel;
+    private org.jhotdraw.draw.gui.JAttributeTextField<Double> opacityField;
+    private javax.swing.JLabel opacityLabel;
+    private org.jhotdraw.gui.JPopupButton opacityPopupButton;
 
     /**
      * Creates new form.
@@ -43,17 +58,43 @@ public class EditCanvasPanel extends javax.swing.JPanel {
     public EditCanvasPanel() {
         labels = ResourceBundleUtil.getBundle("org.jhotdraw.draw.Labels");
         initComponents();
-        colorButton.putClientProperty("Quaqua.Button.style", "colorWell");
+
+        // Initialize Slider
         opacitySlider = new JAttributeSlider(JSlider.VERTICAL, 0, 100, 100);
         opacityPopupButton.add(opacitySlider);
         opacityPopupButton.putClientProperty("JButton.buttonType", "toolbar");
-        add(opacityPopupButton);
+
+        // Initialize Formatter for Opacity Field
         NumberFormatter nf = new NumberFormatter();
         nf.setMaximum(1d);
         nf.setMinimum(0d);
         opacityField.setFormatterFactory(JavaNumberFormatter.createFormatterFactory(0d, 1d, 100d));
-        opacityFieldHandler = new DrawingAttributeEditorHandler<>(CANVAS_FILL_OPACITY, opacityField, null);
-        opacitySliderHandler = new DrawingAttributeEditorHandler<>(CANVAS_FILL_OPACITY, opacitySlider, null);
+
+        // Handlers will be fully initialized when setEditor is called
+    }
+
+    /**
+     * FIX: Sets the editor and initializes handlers correctly.
+     * This is the missing link that prevented the toolbox from working.
+     */
+    public void setEditor(DrawingEditor editor) {
+        this.editor = editor;
+        // Re-initialize handlers with the active editor
+        opacityFieldHandler = new DrawingAttributeEditorHandler<>(CANVAS_FILL_OPACITY, opacityField, editor);
+        opacitySliderHandler = new DrawingAttributeEditorHandler<>(CANVAS_FILL_OPACITY, opacitySlider, editor);
+        updatePanel();
+    }
+
+    public void setDrawing(Drawing newValue) {
+        drawing = newValue;
+        updatePanel();
+    }
+
+    private void updatePanel() {
+        if (drawing != null) {
+            Color c = drawing.get(CANVAS_FILL_COLOR);
+            colorButton.setBackground(c == null ? Color.WHITE : c);
+        }
     }
 
     private JColorChooser getColorChooser() {
@@ -63,113 +104,65 @@ public class EditCanvasPanel extends javax.swing.JPanel {
         return colorChooser;
     }
 
-    /**
-     * Sets the GridConstrainer to be edited by this panel.
-     *
-     * @param newValue The GridConstrainer.
-     */
-    public void setDrawing(Drawing newValue) {
-        drawing = newValue;
-        // XXX - This does not work, we must pass the drawing editor here!
-        opacitySliderHandler.setDrawing(drawing);
-        opacityFieldHandler.setDrawing(drawing);
-        updatePanel();
-    }
-
-    /**
-     * Updates the drawing due to changes made on this panel.
-     */
-    private void updateDrawing() {
-        if (drawing != null) {
-            drawing.willChange();
-            drawing.fireUndoableEditHappened(
-                    CANVAS_FILL_COLOR.setUndoable(drawing, colorButton.getBackground()));
-            drawing.changed();
-        }
-    }
-
-    /**
-     * Updates the panel due to changes made on the drawing.
-     */
-    private void updatePanel() {
-        if (drawing != null) {
-            colorButton.setBackground(drawing.get(CANVAS_FILL_COLOR));
-        }
-    }
-
-    /**
-     * Returns the GridConstrainer currently being edited by this panel.
-     *
-     * @return The GridConstrainer.
-     */
-    public Drawing getDrawing() {
-        return drawing;
-    }
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        JFrame f = new JFrame("Drawing Settings2");
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        f.add(new EditCanvasPanel());
-        f.pack();
-        f.setVisible(true);
-    }
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
-        bgColorButtonGroup = new javax.swing.ButtonGroup();
-        colorLabel = new javax.swing.JLabel();
-        colorButton = new javax.swing.JButton();
-        opacityLabel = new javax.swing.JLabel();
-        opacityField = new org.jhotdraw.draw.gui.JAttributeTextField<Double>();
-        opacityPopupButton = new org.jhotdraw.gui.JPopupButton();
-        setLayout(new java.awt.GridBagLayout());
-        colorLabel.setText(labels.getString("attribute.canvasFillColor.text")); // NOI18N
-        colorLabel.setToolTipText(labels.getString("attribute.backgroundColor.toolTipText")); // NOI18N
-        add(colorLabel, new java.awt.GridBagConstraints());
+        GridBagConstraints gridBagConstraints;
+
+        colorLabel = new JLabel();
+        colorButton = new JButton();
+        opacityLabel = new JLabel();
+        opacityField = new JAttributeTextField<Double>();
+        opacityPopupButton = new JPopupButton();
+
+        setLayout(new GridBagLayout());
+
+        colorLabel.setText(labels.getString("attribute.canvasFillColor.text"));
+        colorLabel.setToolTipText(labels.getString("attribute.backgroundColor.toolTipText"));
+        add(colorLabel, new GridBagConstraints());
+
         colorButton.setText(" ");
-        colorButton.setToolTipText(labels.getString("attribute.backgroundColor.toolTipText")); // NOI18N
+        // Ensure button has a minimum size so it is visible even if empty
+        colorButton.setPreferredSize(new java.awt.Dimension(24, 24));
+        colorButton.setToolTipText(labels.getString("attribute.backgroundColor.toolTipText"));
+        colorButton.putClientProperty("Quaqua.Button.style", "colorWell");
         colorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 colorButtonPerformed(evt);
             }
         });
-        add(colorButton, new java.awt.GridBagConstraints());
-        opacityLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/jhotdraw/draw/action/images/attributeOpacity.png"))); // NOI18N
-        opacityLabel.setToolTipText(labels.getString("attribute.opacity.toolTipText")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        add(colorButton, new GridBagConstraints());
+
+        opacityLabel.setIcon(new ImageIcon(getClass().getResource("/org/jhotdraw/draw/action/images/attributeOpacity.png")));
+        opacityLabel.setToolTipText(labels.getString("attribute.opacity.toolTipText"));
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.insets = new Insets(0, 10, 0, 0);
         add(opacityLabel, gridBagConstraints);
+
         opacityField.setColumns(3);
-        add(opacityField, new java.awt.GridBagConstraints());
-        opacityPopupButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/jhotdraw/draw/action/images/popupIcon.png"))); // NOI18N
-        opacityPopupButton.setToolTipText(labels.getString("attribute.opacity.toolTipText")); // NOI18N
-        add(opacityPopupButton, new java.awt.GridBagConstraints());
-    }// </editor-fold>//GEN-END:initComponents
-    private void colorButtonPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorButtonPerformed
+        add(opacityField, new GridBagConstraints());
+
+        opacityPopupButton.setIcon(new ImageIcon(getClass().getResource("/org/jhotdraw/draw/action/images/popupIcon.png")));
+        opacityPopupButton.setToolTipText(labels.getString("attribute.opacity.toolTipText"));
+        add(opacityPopupButton, new GridBagConstraints());
+    }
+
+    private void colorButtonPerformed(java.awt.event.ActionEvent evt) {
         if (drawing != null) {
-            Color color = Dialogs.showColorChooserDialog(colorChooser, this, labels.getString("attribute.backgroundColor"),
-                    drawing.get(CANVAS_FILL_COLOR));
-            colorButton.setBackground(color);
-            updateDrawing();
+            Color initialColor = drawing.get(CANVAS_FILL_COLOR);
+            if (initialColor == null) initialColor = Color.WHITE;
+
+            Color color = Dialogs.showColorChooserDialog(getColorChooser(), this,
+                    labels.getString("attribute.backgroundColor"),
+                    initialColor);
+
+            if (color != null) {
+                colorButton.setBackground(color);
+                // Directly update the drawing attribute
+                drawing.willChange();
+                drawing.set(CANVAS_FILL_COLOR, color);
+                drawing.fireUndoableEditHappened(
+                        CANVAS_FILL_COLOR.setUndoable(drawing, color));
+                drawing.changed();
+            }
         }
-}//GEN-LAST:event_colorButtonPerformed
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup bgColorButtonGroup;
-    private javax.swing.JButton colorButton;
-    private javax.swing.JLabel colorLabel;
-    private org.jhotdraw.draw.gui.JAttributeTextField opacityField;
-    private javax.swing.JLabel opacityLabel;
-    private org.jhotdraw.gui.JPopupButton opacityPopupButton;
-    // End of variables declaration//GEN-END:variables
+    }
 }

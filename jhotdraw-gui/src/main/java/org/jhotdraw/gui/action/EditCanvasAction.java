@@ -8,7 +8,6 @@
 package org.jhotdraw.gui.action;
 
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
 import java.util.prefs.Preferences;
 import javax.swing.JFrame;
 import org.jhotdraw.api.app.Application;
@@ -19,11 +18,7 @@ import org.jhotdraw.util.prefs.PreferencesUtil;
 
 /**
  * EditCanvasAction.
- * <p>
- * XXX - We shouldn't have a dependency to the application framework
- * from within the drawing framework.
- *
- * @author Werner Randelshofer
+ * * @author Werner Randelshofer
  * @version $Id$
  */
 public class EditCanvasAction extends AbstractDrawingViewAction {
@@ -32,7 +27,6 @@ public class EditCanvasAction extends AbstractDrawingViewAction {
     public static final String ID = "view.editCanvas";
     private JFrame frame;
     private EditCanvasPanel settingsPanel;
-    private PropertyChangeListener propertyChangeHandler;
     private Application app;
 
     /**
@@ -67,14 +61,23 @@ public class EditCanvasAction extends AbstractDrawingViewAction {
             frame = new JFrame();
             frame.setTitle(labels.getString("window.editCanvas.title"));
             frame.setResizable(false);
+
             settingsPanel = new EditCanvasPanel();
+            // FIX: Pass the editor to the panel so controls actually work
+            settingsPanel.setEditor(getEditor());
+
             frame.add(settingsPanel);
             frame.pack();
             Preferences prefs = PreferencesUtil.userNodeForPackage(getClass());
             PreferencesUtil.installFramePrefsHandler(prefs, "canvasSettings", frame);
             getApplication().addWindow(frame, null);
         }
-        settingsPanel.setDrawing(getView().getDrawing());
+
+        // Ensure drawing is set if view exists
+        if (getView() != null) {
+            settingsPanel.setDrawing(getView().getDrawing());
+        }
+
         return frame;
     }
 }

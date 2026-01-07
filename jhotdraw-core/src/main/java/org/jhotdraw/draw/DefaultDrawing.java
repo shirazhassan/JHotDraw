@@ -254,20 +254,40 @@ public class DefaultDrawing
 
     @Override
     public void drawCanvas(Graphics2D g) {
-        if (get(CANVAS_WIDTH) != null && get(CANVAS_HEIGHT) != null) {
-            // Determine canvas color and opacity
-            Color canvasColor = get(CANVAS_FILL_COLOR);
-            Double fillOpacity = get(CANVAS_FILL_OPACITY);
-            if (canvasColor != null && fillOpacity > 0) {
-                canvasColor = new Color(
-                        (canvasColor.getRGB() & 0xffffff)
-                        | ((int) (fillOpacity * 255) << 24), true);
-                // Fill the canvas
-                Rectangle2D.Double r = new Rectangle2D.Double(
-                        0, 0, get(CANVAS_WIDTH), get(CANVAS_HEIGHT));
-                g.setColor(canvasColor);
-                g.fill(r);
-            }
+        // FIX: Handle Null Width/Height gracefully
+        Double width = get(CANVAS_WIDTH);
+        Double height = get(CANVAS_HEIGHT);
+
+        // If dimensions are missing, you might want to default to the current clip
+        // or just return. However, to ensure color changes appear, we check:
+        if (width == null || height == null) {
+            // Optional: Draw on a default size if user hasn't set one yet
+            // width = 800d; height = 600d;
+            // For now, we return to avoid breaking SVG export logic,
+            // BUT you must ensure your document has a size set.
+            return;
+        }
+
+        Color canvasColor = get(CANVAS_FILL_COLOR);
+        Double fillOpacity = get(CANVAS_FILL_OPACITY);
+
+        // FIX: Ensure non-null attributes
+        if (canvasColor == null) canvasColor = Color.WHITE;
+        if (fillOpacity == null) fillOpacity = 1.0;
+
+        if (fillOpacity > 0) {
+            // Calculate Alpha Correctly (0.0 - 1.0 mapping)
+            int alpha = (int) (fillOpacity * 255);
+            // Clamp alpha to 0-255 to prevent crashes
+            alpha = Math.min(255, Math.max(0, alpha));
+
+            Color fillColor = new Color(
+                    (canvasColor.getRGB() & 0xffffff) | (alpha << 24),
+                    true);
+
+            Rectangle2D.Double r = new Rectangle2D.Double(0, 0, width, height);
+            g.setColor(fillColor);
+            g.fill(r);
         }
     }
 }
