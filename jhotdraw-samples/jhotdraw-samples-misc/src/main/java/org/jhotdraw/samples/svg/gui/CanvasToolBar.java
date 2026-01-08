@@ -79,17 +79,17 @@ public class CanvasToolBar extends AbstractToolBar {
                 gbc.gridy = 0;
                 gbc.anchor = GridBagConstraints.WEST;
 
-                // --- 1. Background Color Button ---
+                // --- Background Color Button ---
                 // FIX: Use ButtonFactory to create the button correctly for the editor
                 Map<AttributeKey<?>, Object> defaultAttributes = new HashMap<AttributeKey<?>, Object>();
                 defaultAttributes.put(CANVAS_FILL_COLOR, Color.WHITE);
 
                 // createDrawingColorButton is the correct way to get a functional color button
-                // --- 1. Background Color Button ---
+                // --- Background Color Button ---
                 defaultAttributes = new HashMap<AttributeKey<?>, Object>();
                 defaultAttributes.put(CANVAS_FILL_COLOR, Color.BLACK);
 
-// We need to provide the color list and column count to satisfy your ButtonFactory version
+// We need to provide the color list and column count to satisfy ButtonFactory version
                 AbstractButton colorButton = ButtonFactory.createDrawingColorButton(
                         editor,
                         CANVAS_FILL_COLOR,
@@ -104,7 +104,7 @@ public class CanvasToolBar extends AbstractToolBar {
                 colorButton.setPreferredSize(new Dimension(24, 24));
                 p.add(colorButton, gbc);
 
-                // --- 2. Opacity Slider ---
+                // --- Opacity Slider ---
                 JAttributeSlider opacitySlider = new JAttributeSlider(JSlider.VERTICAL, 0, 100, 100);
                 opacitySlider.setUI((javax.swing.plaf.SliderUI) PaletteSliderUI.createUI(opacitySlider));
                 opacitySlider.setScaleFactor(100d);
@@ -121,7 +121,7 @@ public class CanvasToolBar extends AbstractToolBar {
                 gbc.insets = new Insets(0, 3, 0, 0);
                 p.add(opacityPopupButton, gbc);
 
-                // --- 3. Opacity Field ---
+                // ---Opacity Field ---
                 JAttributeTextField<Double> opacityField = new JAttributeTextField<Double>();
                 opacityField.setColumns(3);
                 opacityField.setUI((PaletteFormattedTextFieldUI) PaletteFormattedTextFieldUI.createUI(opacityField));
